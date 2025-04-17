@@ -25,9 +25,3 @@ At a later point, an admin enters the `student`'s score into the system.
 If the `student` scored over 70% then it's a pass, otherwise, it is a
 failure. Before the scoring, the status is pending.
 
-## Creating the project
-
-In the project directory run:
-
-`spring init -a rest-validation -g examware -d web,postgresql,flyway,data-jpa -j 24 -x .`
-
