@@ -1,4 +1,4 @@
-package examware.rest_validation;
+package examware;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
