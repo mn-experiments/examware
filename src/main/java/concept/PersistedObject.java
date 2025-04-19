@@ -1,10 +1,5 @@
 package concept;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-import java.lang.annotation.Inherited;
 import java.util.Objects;
 
 public abstract class PersistedObject {

@@ -27,6 +27,7 @@ public class StudentController {
     }
 
     @PutMapping("{name}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional void update(@PathVariable String name, @RequestBody Map<String, Object> newInfo) {
         var student = repo.findByName(name).orElseThrow(() -> new RuntimeException("not found"));
 
