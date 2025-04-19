@@ -71,10 +71,7 @@ public class StudentEndpointTest {
                 .when().get("John")
                 .thenReturn().body().as(StudentDto.class);
 
-        assertThat(student)
-                .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(new StudentDto(123L, "John", true, 2));
+        assertThat(student).isEqualTo(new StudentDto("John", true, 2));
     }
 
     @Test
@@ -82,8 +79,8 @@ public class StudentEndpointTest {
         var john = new StudentCreationRequest("John", true, 2);
         var bob = new StudentCreationRequest("Bob", true, 3);
 
-        var johnDto = new StudentDto(1L, "John", true, 2);
-        var bobDto = new StudentDto(2L, "Bob", true, 3);
+        var johnDto = new StudentDto("John", true, 2);
+        var bobDto = new StudentDto("Bob", true, 3);
 
         RestAssured.given()
                 .body(john)
@@ -106,11 +103,7 @@ public class StudentEndpointTest {
 
         assertThat(students).hasSize(2);
 
-        assertThat(students).allSatisfy(
-                it -> assertThat(it)
-                        .usingRecursiveComparison()
-                        .ignoringFields("id")
-                        .isIn(johnDto, bobDto));
+        assertThat(students).containsExactlyInAnyOrder(johnDto, bobDto);
     }
 
     @Test
@@ -140,10 +133,7 @@ public class StudentEndpointTest {
                 .get("{name}")
                 .then().extract().as(StudentDto.class);
 
-        assertThat(updatedJohn)
-                .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(new StudentDto(123L, "John X", false, 3));
+        assertThat(updatedJohn).isEqualTo(new StudentDto("John X", false, 3));
 
         RestAssured
                 .given()

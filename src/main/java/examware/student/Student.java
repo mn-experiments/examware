@@ -44,7 +44,7 @@ public class Student extends PersistedObject {
     }
 
     public StudentDto asDto() {
-        return new StudentDto(id, name, hasPayedFee, lessonCount);
+        return new StudentDto(name, hasPayedFee, lessonCount);
     }
 
     public void updateWith(Map<String, Object> newInfo) {
