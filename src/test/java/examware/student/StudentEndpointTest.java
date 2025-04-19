@@ -75,10 +75,6 @@ public class StudentEndpointTest {
                 .usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(new StudentDto(123L, "John", true, 2));
-//        assertEquals(1, student.id());
-//        assertEquals("John", student.name());
-//        assertTrue(student.hasPayedFee());
-//        assertEquals(2, student.lessonCount());
     }
 
     @Test
