@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.Map;
+
 @Entity
 public class Student extends PersistedObject {
     @Id
@@ -43,5 +45,11 @@ public class Student extends PersistedObject {
 
     public StudentDto asDto() {
         return new StudentDto(id, name, hasPayedFee, lessonCount);
+    }
+
+    public void updateWith(Map<String, Object> newInfo) {
+        name = (String) newInfo.getOrDefault("name", name);
+        hasPayedFee = (Boolean) newInfo.getOrDefault("hasPayedFee", hasPayedFee);
+        lessonCount = (Integer) newInfo.getOrDefault("lessonCount", lessonCount);
     }
 }

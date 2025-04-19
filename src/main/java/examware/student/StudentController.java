@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("student")
@@ -21,6 +22,15 @@ public class StudentController {
     @Transactional
     void create(@RequestBody StudentCreationRequest creationRequest) {
         var student = new Student(creationRequest);
+
+        repo.save(student);
+    }
+
+    @PutMapping("{name}")
+    @Transactional void update(@PathVariable String name, @RequestBody Map<String, Object> newInfo) {
+        var student = repo.findByName(name).orElseThrow(() -> new RuntimeException("not found"));
+
+        student.updateWith(newInfo);
 
         repo.save(student);
     }

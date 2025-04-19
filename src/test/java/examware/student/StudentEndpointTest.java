@@ -1,7 +1,6 @@
 package examware.student;
 
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,11 +13,12 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.util.List;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+
+// TODO: gotta refactor the assertions or the DTOs, excluding the ID each time is not ergonomic.
+//  HTTP calls can be refactored into a superclass.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StudentEndpointTest {
@@ -71,10 +71,14 @@ public class StudentEndpointTest {
                 .when().get("John")
                 .thenReturn().body().as(StudentDto.class);
 
-        assertEquals(1, student.id());
-        assertEquals("John", student.name());
-        assertTrue(student.hasPayedFee());
-        assertEquals(2, student.lessonCount());
+        assertThat(student)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(new StudentDto(123L, "John", true, 2));
+//        assertEquals(1, student.id());
+//        assertEquals("John", student.name());
+//        assertTrue(student.hasPayedFee());
+//        assertEquals(2, student.lessonCount());
     }
 
     @Test
@@ -104,7 +108,53 @@ public class StudentEndpointTest {
                 .when().get("all")
                 .then().extract().jsonPath().getList(".", StudentDto.class);
 
-        assertThat(students, org.hamcrest.Matchers.containsInAnyOrder(johnDto, bobDto));
+        assertThat(students).hasSize(2);
+
+        assertThat(students).allSatisfy(
+                it -> assertThat(it)
+                        .usingRecursiveComparison()
+                        .ignoringFields("id")
+                        .isIn(johnDto, bobDto));
+    }
+
+    @Test
+    void canUpdateStudent() {
+        var john = new StudentCreationRequest("John", true, 2);
+
+        var newInfo = Map.<String, Object>of("name", "John X", "hasPayedFee", false, "lessonCount", 3);
+
+        RestAssured.given()
+                .body(john)
+                .contentType(ContentType.JSON)
+                .when()
+                .post()
+                .then().statusCode(201);
+
+        RestAssured.given()
+                .body(newInfo)
+                .contentType(ContentType.JSON)
+                .pathParam("name", john.name())
+                .when().put("{name}")
+                .then().statusCode(200);
+
+        var updatedJohn = RestAssured
+                .given()
+                .pathParam("name", "John X")
+                .when()
+                .get("{name}")
+                .then().extract().as(StudentDto.class);
+
+        assertThat(updatedJohn)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(new StudentDto(123L, "John X", false, 3));
+
+        RestAssured
+                .given()
+                .pathParam("name", "John")
+                .when()
+                .get("{name}")
+                .then().statusCode(500);
     }
 
 }
