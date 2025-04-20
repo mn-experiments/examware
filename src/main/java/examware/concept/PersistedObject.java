@@ -1,5 +1,6 @@
-package concept;
+package examware.concept;
 
+import java.util.Map;
 import java.util.Objects;
 
 public abstract class PersistedObject {
@@ -19,4 +20,6 @@ public abstract class PersistedObject {
     public int hashCode() {
         return Objects.hashCode(getId());
     }
+
+    public abstract void updateWith(Map<String, Object> newInfo);
 }

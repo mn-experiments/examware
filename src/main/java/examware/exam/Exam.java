@@ -1,10 +1,12 @@
 package examware.exam;
 
-import concept.PersistedObject;
+import examware.concept.PersistedObject;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
+import java.util.Map;
 
 @Entity
 public class Exam extends PersistedObject {
@@ -14,7 +16,8 @@ public class Exam extends PersistedObject {
 
     private String name;
 
-    private Exam() {}
+    // needed by hibernate
+    Exam() {}
 
     public Exam(ExamCreationRequest creationRequest) {
         name = creationRequest.name();
@@ -23,6 +26,11 @@ public class Exam extends PersistedObject {
     @Override
     protected Long getId() {
         return id;
+    }
+
+    @Override
+    public void updateWith(Map<String, Object> newInfo) {
+
     }
 
     public String getName() {

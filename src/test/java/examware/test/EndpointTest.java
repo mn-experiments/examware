@@ -1,5 +1,6 @@
 package examware.test;
 
+import examware.attempt.AttemptRepo;
 import examware.exam.ExamRepo;
 import examware.student.StudentRepo;
 import io.restassured.RestAssured;
@@ -8,6 +9,8 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -25,7 +28,12 @@ public abstract class EndpointTest {
     private StudentRepo studentRepo;
 
     @Autowired
+    private AttemptRepo attemptRepo;
+
+    @Autowired
     private ExamRepo examRepo;
+
+    private static Logger log = LoggerFactory.getLogger(EndpointTest.class);
 
     private static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:17");
 
@@ -49,8 +57,11 @@ public abstract class EndpointTest {
 
     @AfterEach
     void cleanup() {
+        log.info("===== CLEANING UP DB BETWEEN TESTS =====");
+        attemptRepo.deleteAll();
         studentRepo.deleteAll();
         examRepo.deleteAll();
+        log.info("===== DONE CLEANING UP DB BETWEEN TESTS =====");
     }
 
     protected abstract String basePath();

@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface ExamRepo extends JpaRepository<Exam, Long> {
     Optional<Exam> findByName(String name);
     void deleteByName(String name);
+    Exam getReferenceByName(String name);
 }

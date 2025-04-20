@@ -10,13 +10,9 @@ id SERIAL PRIMARY KEY,
 name VARCHAR(200) UNIQUE NOT NULL
 );
 
-CREATE TYPE attempt_status
-AS ENUM('pending', 'passed', 'failed');
-
 CREATE TABLE attempt(
 id SERIAL PRIMARY KEY,
 attempt_date TIMESTAMPTZ NOT NULL,
-status ATTEMPT_STATUS NOT NULL DEFAULT 'pending',
 score INTEGER,
 student_id INTEGER NOT NULL,
 exam_id INTEGER NOT NULL,

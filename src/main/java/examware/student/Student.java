@@ -1,6 +1,6 @@
 package examware.student;
 
-import concept.PersistedObject;
+import examware.concept.PersistedObject;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,7 +17,8 @@ public class Student extends PersistedObject {
     private boolean hasPayedFee;
     private int lessonCount;
 
-    private Student() {
+    // needed by hibernate
+    Student() {
     }
 
     public Student(StudentCreationRequest creationRequest) {
@@ -47,6 +48,7 @@ public class Student extends PersistedObject {
         return new StudentDto(name, hasPayedFee, lessonCount);
     }
 
+    @Override
     public void updateWith(Map<String, Object> newInfo) {
         name = (String) newInfo.getOrDefault("name", name);
         hasPayedFee = (Boolean) newInfo.getOrDefault("hasPayedFee", hasPayedFee);

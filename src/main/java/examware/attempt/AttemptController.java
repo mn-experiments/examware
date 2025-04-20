@@ -1,0 +1,53 @@
+package examware.attempt;
+
+import examware.exam.ExamRepo;
+import examware.student.StudentRepo;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("attempt")
+public class AttemptController {
+    private final AttemptRepo repo;
+    private final StudentRepo studentRepo;
+    private final ExamRepo examRepo;
+
+    public AttemptController(AttemptRepo repo, StudentRepo studentRepo, ExamRepo examRepo) {
+        this.repo = repo;
+        this.studentRepo = studentRepo;
+        this.examRepo = examRepo;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    void create(@RequestBody AttemptCreationRequest creationRequest) {
+        // TODO: link by the actual IDs instead
+        var student = studentRepo.getReferenceByName(creationRequest.studentName());
+        var exam = examRepo.getReferenceByName(creationRequest.examName());
+
+        var attempt = new Attempt(student, exam);
+
+        repo.save(attempt);
+    }
+
+    @PutMapping("{id}")
+    void update(@PathVariable Long id, @RequestBody Map<String, Object> newInfo) {
+        var attempt = repo.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+        attempt.updateWith(newInfo);
+
+        repo.save(attempt);
+    }
+
+    @GetMapping("{id}")
+    AttemptDto read(@PathVariable Long id) {
+        return repo.findById(id).map(Attempt::asDto).orElseThrow(() -> new RuntimeException("not found"));
+    }
+
+    @GetMapping("all")
+    List<AttemptDto> readAll() {
+        return repo.findAll().stream().map(Attempt::asDto).toList();
+    }
+}
