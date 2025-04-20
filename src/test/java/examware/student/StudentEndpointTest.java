@@ -1,13 +1,14 @@
 package examware.student;
 
+import examware.test.Assertions;
 import examware.test.EndpointTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class StudentEndpointTest extends EndpointTest {
+
+    private static long RANDOM_ID = 1;
 
     @Test
     void canCreateStudent() {
@@ -21,7 +22,7 @@ public class StudentEndpointTest extends EndpointTest {
                 .when().get("John")
                 .thenReturn().body().as(StudentDto.class);
 
-        assertThat(student).isEqualTo(new StudentDto("John", true, 2));
+        Assertions.assertThat(student).hasSameDataAs(new StudentDto(RANDOM_ID, "John", true, 2));
     }
 
     @Test
@@ -29,19 +30,20 @@ public class StudentEndpointTest extends EndpointTest {
         var john = new StudentCreationRequest("John", true, 2);
         var bob = new StudentCreationRequest("Bob", true, 3);
 
-        var johnDto = new StudentDto("John", true, 2);
-        var bobDto = new StudentDto("Bob", true, 3);
 
         givenAttemptToWrite().body(john).post();
         givenAttemptToWrite().body(bob).post();
+
+        var johnDto = givenAttemptToRead().get(john.name()).as(StudentDto.class);
+        var bobDto = givenAttemptToRead().get(bob.name()).as(StudentDto.class);
 
         var students = givenAttemptToRead()
                 .when().get("all")
                 .then().extract().jsonPath().getList(".", StudentDto.class);
 
-        assertThat(students).hasSize(2);
+        Assertions.assertThat(students).hasSize(2);
 
-        assertThat(students).containsExactlyInAnyOrder(johnDto, bobDto);
+        Assertions.assertThat(students).containsExactlyInAnyOrder(johnDto, bobDto);
     }
 
     @Test
@@ -60,7 +62,7 @@ public class StudentEndpointTest extends EndpointTest {
                 .when().get("{name}")
                 .then().extract().as(StudentDto.class);
 
-        assertThat(updatedJohn).isEqualTo(new StudentDto("John X", false, 3));
+        Assertions.assertThat(updatedJohn).hasSameDataAs(new StudentDto(RANDOM_ID, "John X", false, 3));
 
         givenAttemptToRead().pathParam("name", "John")
                 .when().get("{name}")

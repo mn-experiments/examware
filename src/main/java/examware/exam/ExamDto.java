@@ -1,4 +1,4 @@
 package examware.exam;
 
-public record ExamDto(String name) {
+public record ExamDto(long id, String name) {
 }

@@ -26,10 +26,10 @@ public class Attempt extends PersistedObject {
 
     private Attempt() {}
 
-    public Attempt(Student student, Exam exam) {
+    public Attempt(Student student, Exam exam, AttemptCreationRequest creationRequest) {
         this.student = student;
         this.exam = exam;
-        this.attemptDate = OffsetDateTime.now();
+        this.attemptDate = creationRequest.attemptDate();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Attempt extends PersistedObject {
     }
 
     public AttemptDto asDto() {
-        return new AttemptDto(student.getName(), exam.getName(), attemptDate, score);
+        return new AttemptDto(id, attemptDate, score);
     }
 
     @Override

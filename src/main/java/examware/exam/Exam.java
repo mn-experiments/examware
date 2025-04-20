@@ -38,6 +38,6 @@ public class Exam extends PersistedObject {
     }
 
     public ExamDto asDto() {
-        return new ExamDto(name);
+        return new ExamDto(id, name);
     }
 }

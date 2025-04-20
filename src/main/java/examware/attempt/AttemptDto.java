@@ -2,5 +2,5 @@ package examware.attempt;
 
 import java.time.OffsetDateTime;
 
-public record AttemptDto(String student, String exam, OffsetDateTime attemptDate, Integer score) {
+public record AttemptDto(long id, OffsetDateTime attemptDate, Integer score) {
 }

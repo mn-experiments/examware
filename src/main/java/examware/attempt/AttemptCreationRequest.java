@@ -1,4 +1,6 @@
 package examware.attempt;
 
-public record AttemptCreationRequest(String studentName, String examName) {
+import java.time.OffsetDateTime;
+
+public record AttemptCreationRequest(Long studentId, Long examId, OffsetDateTime attemptDate) {
 }

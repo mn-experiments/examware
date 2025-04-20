@@ -45,7 +45,7 @@ public class Student extends PersistedObject {
     }
 
     public StudentDto asDto() {
-        return new StudentDto(name, hasPayedFee, lessonCount);
+        return new StudentDto(id, name, hasPayedFee, lessonCount);
     }
 
     @Override

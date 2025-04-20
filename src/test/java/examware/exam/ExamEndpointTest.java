@@ -1,11 +1,12 @@
 package examware.exam;
 
+import examware.test.Assertions;
 import examware.test.EndpointTest;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ExamEndpointTest extends EndpointTest {
+
+    private static long RANDOM_ID = 1;
 
     @Override
     protected String basePath() {
@@ -24,7 +25,7 @@ public class ExamEndpointTest extends EndpointTest {
                 .when().get("{name}")
                 .then().statusCode(200).extract().jsonPath().getObject("", ExamDto.class);
 
-        assertThat(dto).isEqualTo(new ExamDto("B"));
+        Assertions.assertThat(dto).hasSameDataAs(new ExamDto(RANDOM_ID, "B"));
 
         givenAttemptToWrite()
                 .when().delete("B")
@@ -40,10 +41,13 @@ public class ExamEndpointTest extends EndpointTest {
         givenAttemptToWrite().body(new ExamCreationRequest("B")).post();
         givenAttemptToWrite().body(new ExamCreationRequest("B197")).post();
 
+        var exam1 = givenAttemptToRead().get("B").as(ExamDto.class);
+        var exam2 = givenAttemptToRead().get("B197").as(ExamDto.class);
+
         var exams = givenAttemptToRead().get("all")
                 .then().statusCode(200).and()
                 .extract().jsonPath().getList("", ExamDto.class);
 
-        assertThat(exams).containsExactlyInAnyOrder(new ExamDto("B"), new ExamDto("B197"));
+        Assertions.assertThat(exams).containsExactlyInAnyOrder(exam1, exam2);
     }
 }

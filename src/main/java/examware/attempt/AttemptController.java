@@ -24,11 +24,10 @@ public class AttemptController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     void create(@RequestBody AttemptCreationRequest creationRequest) {
-        // TODO: link by the actual IDs instead
-        var student = studentRepo.getReferenceByName(creationRequest.studentName());
-        var exam = examRepo.getReferenceByName(creationRequest.examName());
+        var student = studentRepo.getReferenceById(creationRequest.studentId());
+        var exam = examRepo.getReferenceById(creationRequest.examId());
 
-        var attempt = new Attempt(student, exam);
+        var attempt = new Attempt(student, exam, creationRequest);
 
         repo.save(attempt);
     }
