@@ -20,20 +20,21 @@ public class StudentController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
-    void create(@RequestBody StudentCreationRequest creationRequest) {
+    StudentDto create(@RequestBody StudentCreationRequest creationRequest) {
         var student = new Student(creationRequest);
 
-        repo.save(student);
+        return repo.save(student).asDto();
     }
 
     @PutMapping("{name}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Transactional void update(@PathVariable String name, @RequestBody Map<String, Object> newInfo) {
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional
+    StudentDto update(@PathVariable String name, @RequestBody Map<String, Object> newInfo) {
         var student = repo.findByName(name).orElseThrow(() -> new RuntimeException("not found"));
 
         student.updateWith(newInfo);
 
-        repo.save(student);
+        return repo.save(student).asDto();
     }
 
     @GetMapping("{name}")

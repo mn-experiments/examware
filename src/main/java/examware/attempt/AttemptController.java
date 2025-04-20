@@ -23,21 +23,22 @@ public class AttemptController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    void create(@RequestBody AttemptCreationRequest creationRequest) {
+    AttemptDto create(@RequestBody AttemptCreationRequest creationRequest) {
         var student = studentRepo.getReferenceById(creationRequest.studentId());
         var exam = examRepo.getReferenceById(creationRequest.examId());
 
         var attempt = new Attempt(student, exam, creationRequest);
 
-        repo.save(attempt);
+        return repo.save(attempt).asDto();
     }
 
     @PutMapping("{id}")
-    void update(@PathVariable Long id, @RequestBody Map<String, Object> newInfo) {
+    @ResponseStatus(HttpStatus.OK)
+    AttemptDto update(@PathVariable Long id, @RequestBody Map<String, Object> newInfo) {
         var attempt = repo.findById(id).orElseThrow(() -> new RuntimeException("not found"));
         attempt.updateWith(newInfo);
 
-        repo.save(attempt);
+        return repo.save(attempt).asDto();
     }
 
     @GetMapping("{id}")

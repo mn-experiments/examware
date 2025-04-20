@@ -18,10 +18,10 @@ public class ExamController {
     @PostMapping
     @Transactional
     @ResponseStatus(HttpStatus.CREATED)
-    void create(@RequestBody ExamCreationRequest creationRequest) {
+    ExamDto create(@RequestBody ExamCreationRequest creationRequest) {
         var exam = new Exam(creationRequest);
 
-        repo.save(exam);
+        return repo.save(exam).asDto();
     }
 
     @GetMapping("{name}")

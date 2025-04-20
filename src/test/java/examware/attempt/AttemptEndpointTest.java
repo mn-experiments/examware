@@ -1,8 +1,9 @@
 package examware.attempt;
 
 import examware.exam.ExamCreationRequest;
+import examware.exam.ExamDto;
 import examware.student.StudentCreationRequest;
-import examware.test.Assertions;
+import examware.student.StudentDto;
 import examware.test.EndpointTest;
 import org.junit.jupiter.api.Test;
 
@@ -10,10 +11,11 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class AttemptEndpointTest extends EndpointTest {
 
     public static final OffsetDateTime ATTEMPT_DATE = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC);
-    private static long RANDOM_ID = 1;
 
     @Override
     protected String basePath() {
@@ -22,44 +24,47 @@ public class AttemptEndpointTest extends EndpointTest {
 
     @Test
     void canCreateAttempt() {
-        givenAttemptToWrite().body(new StudentCreationRequest("Bob", true, 1)).basePath("student").post();
-        givenAttemptToWrite().body(new ExamCreationRequest("B")).basePath("exam").post();
+        var student = givenAttemptToWrite()
+                        .body(new StudentCreationRequest("Bob", true, 1))
+                        .basePath("student")
+                        .post().as(StudentDto.class);
 
-        var userId = givenAttemptToRead().basePath("student").get("Bob").then().extract().jsonPath().getLong("id");
-        var examId = givenAttemptToRead().basePath("exam").get("B").then().extract().jsonPath().getLong("id");
+        var exam = givenAttemptToWrite()
+                .body(new ExamCreationRequest("B"))
+                .basePath("exam")
+                .post().as(ExamDto.class);
 
-        givenAttemptToWrite().body(new AttemptCreationRequest(userId, examId, ATTEMPT_DATE))
+        var createdAttempt = givenAttemptToWrite()
+                .body(new AttemptCreationRequest(student.id(), exam.id(), ATTEMPT_DATE))
                 .when().post()
-                .then().statusCode(201);
+                .then().statusCode(201).extract().as(AttemptDto.class);
 
-        var attempts = givenAttemptToRead().get("all")
-                .then().extract().jsonPath().getList("", AttemptDto.class);
+        var retrievedAttempt = givenAttemptToRead().get(Long.toString(createdAttempt.id()))
+                .then().extract().as(AttemptDto.class);
 
-        Assertions.assertThat(attempts).hasSize(1);
-
-        var attempt = attempts.get(0);
-
-        Assertions.assertThat(attempt).hasSameDataAs(new AttemptDto(RANDOM_ID, ATTEMPT_DATE, null));
+        assertThat(retrievedAttempt).isEqualTo(new AttemptDto(createdAttempt.id(), ATTEMPT_DATE, null));
     }
 
     @Test
     void canUpdateAttempt() {
-        givenAttemptToWrite().body(new StudentCreationRequest("Bob", true, 1)).basePath("student").post();
-        givenAttemptToWrite().body(new ExamCreationRequest("B")).basePath("exam").post();
+        var student = givenAttemptToWrite()
+                        .body(new StudentCreationRequest("Bob", true, 1))
+                        .basePath("student")
+                        .post().as(StudentDto.class);
 
-        var userId = givenAttemptToRead().basePath("student").get("Bob").then().extract().jsonPath().getLong("id");
-        var examId = givenAttemptToRead().basePath("exam").get("B").then().extract().jsonPath().getLong("id");
+        var exam = givenAttemptToWrite()
+                .body(new ExamCreationRequest("B"))
+                .basePath("exam")
+                .post().as(ExamDto.class);
 
+        var attempt = givenAttemptToWrite()
+                .body(new AttemptCreationRequest(student.id(), exam.id(), ATTEMPT_DATE)).post()
+                .as(AttemptDto.class);
 
-        givenAttemptToWrite().body(new AttemptCreationRequest(userId, examId, ATTEMPT_DATE)).post();
-        var attemptId = givenAttemptToRead().get("all").then().extract().jsonPath().getString("[0].id");
+        var updatedAttempt = givenAttemptToWrite().body(Map.<String, Object>of("score", 78))
+                .put(Long.toString(attempt.id()))
+                .as(AttemptDto.class);
 
-        givenAttemptToWrite().body(Map.<String, Object>of("score", 78))
-                .put(attemptId);
-
-        var dto = givenAttemptToRead().get(attemptId)
-                .then().statusCode(200).extract().jsonPath().getObject("", AttemptDto.class);
-
-        Assertions.assertThat(dto).hasSameDataAs(new AttemptDto(1L, ATTEMPT_DATE, 78));
+        assertThat(updatedAttempt).isEqualTo(new AttemptDto(attempt.id(), ATTEMPT_DATE, 78));
     }
 }

@@ -1,28 +1,27 @@
 package examware.student;
 
-import examware.test.Assertions;
 import examware.test.EndpointTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-public class StudentEndpointTest extends EndpointTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    private static long RANDOM_ID = 1;
+public class StudentEndpointTest extends EndpointTest {
 
     @Test
     void canCreateStudent() {
         var john = new StudentCreationRequest("John", true, 2);
 
-        givenAttemptToWrite().body(john)
+        var createdDto = givenAttemptToWrite().body(john)
                 .when().post()
-                .then().statusCode(201);
+                .then().statusCode(201).extract().as(StudentDto.class);
 
-        var student = givenAttemptToRead()
+        var retrievedDto = givenAttemptToRead()
                 .when().get("John")
                 .thenReturn().body().as(StudentDto.class);
 
-        Assertions.assertThat(student).hasSameDataAs(new StudentDto(RANDOM_ID, "John", true, 2));
+        assertThat(retrievedDto).isEqualTo(new StudentDto(createdDto.id(), "John", true, 2));
     }
 
     @Test
@@ -30,20 +29,16 @@ public class StudentEndpointTest extends EndpointTest {
         var john = new StudentCreationRequest("John", true, 2);
         var bob = new StudentCreationRequest("Bob", true, 3);
 
-
-        givenAttemptToWrite().body(john).post();
-        givenAttemptToWrite().body(bob).post();
-
-        var johnDto = givenAttemptToRead().get(john.name()).as(StudentDto.class);
-        var bobDto = givenAttemptToRead().get(bob.name()).as(StudentDto.class);
+        var johnDto = givenAttemptToWrite().body(john).post().as(StudentDto.class);
+        var bobDto = givenAttemptToWrite().body(bob).post().as(StudentDto.class);
 
         var students = givenAttemptToRead()
                 .when().get("all")
                 .then().extract().jsonPath().getList(".", StudentDto.class);
 
-        Assertions.assertThat(students).hasSize(2);
+        assertThat(students).hasSize(2);
 
-        Assertions.assertThat(students).containsExactlyInAnyOrder(johnDto, bobDto);
+        assertThat(students).containsExactlyInAnyOrder(johnDto, bobDto);
     }
 
     @Test
@@ -52,17 +47,13 @@ public class StudentEndpointTest extends EndpointTest {
 
         var newInfo = Map.<String, Object>of("name", "John X", "hasPayedFee", false, "lessonCount", 3);
 
-        givenAttemptToWrite().body(john).post();
+        var johnDto = givenAttemptToWrite().body(john).post().as(StudentDto.class);
 
-        givenAttemptToWrite().body(newInfo).pathParam("name", john.name())
+        var updatedJohn = givenAttemptToWrite().body(newInfo).pathParam("name", johnDto.name())
                 .when().put("{name}")
-                .then().statusCode(204);
+                .then().statusCode(200).extract().as(StudentDto.class);
 
-        var updatedJohn = givenAttemptToRead().pathParam("name", "John X")
-                .when().get("{name}")
-                .then().extract().as(StudentDto.class);
-
-        Assertions.assertThat(updatedJohn).hasSameDataAs(new StudentDto(RANDOM_ID, "John X", false, 3));
+        assertThat(updatedJohn).isEqualTo(new StudentDto(johnDto.id(), "John X", false, 3));
 
         givenAttemptToRead().pathParam("name", "John")
                 .when().get("{name}")
