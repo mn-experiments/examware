@@ -1,5 +1,7 @@
 package examware.student;
 
+import examware.student.controller.StudentCreationRequest;
+import examware.student.controller.StudentDto;
 import examware.test.EndpointTest;
 import org.junit.jupiter.api.Test;
 

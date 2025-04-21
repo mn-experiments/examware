@@ -1,4 +1,4 @@
-package examware.student;
+package examware.student.controller;
 
 public record StudentCreationRequest(
         String name,

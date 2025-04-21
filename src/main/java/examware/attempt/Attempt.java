@@ -1,5 +1,7 @@
 package examware.attempt;
 
+import examware.attempt.controller.AttemptCreationRequest;
+import examware.attempt.controller.AttemptDto;
 import examware.concept.PersistedObject;
 import examware.exam.Exam;
 import examware.student.Student;

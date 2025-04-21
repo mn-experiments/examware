@@ -1,5 +1,7 @@
-package examware.student;
+package examware.student.controller;
 
+import examware.student.Student;
+import examware.student.StudentService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,39 +13,33 @@ import java.util.Map;
 @RequestMapping("student")
 public class StudentController {
 
-    private final StudentRepo repo;
+    private final StudentService service;
 
-    public StudentController(StudentRepo repo) {
-        this.repo = repo;
+    public StudentController(StudentService service) {
+        this.service = service;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     StudentDto create(@RequestBody StudentCreationRequest creationRequest) {
-        var student = new Student(creationRequest);
-
-        return repo.save(student).asDto();
+        return service.create(new Student(creationRequest)).asDto();
     }
 
     @PutMapping("{name}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional
     StudentDto update(@PathVariable String name, @RequestBody Map<String, Object> newInfo) {
-        var student = repo.findByName(name).orElseThrow(() -> new RuntimeException("not found"));
-
-        student.updateWith(newInfo);
-
-        return repo.save(student).asDto();
+        return service.update(name, newInfo).asDto();
     }
 
     @GetMapping("{name}")
     StudentDto read(@PathVariable String name) {
-        return repo.findByName(name).map(Student::asDto).orElseThrow(() -> new RuntimeException("not found"));
+        return service.retrieve(name).asDto();
     }
 
     @GetMapping("all")
     List<StudentDto> readAll() {
-        return repo.findAll().stream().map(Student::asDto).toList();
+        return service.retrieveAll().stream().map(Student::asDto).toList();
     }
 }

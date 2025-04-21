@@ -1,6 +1,8 @@
 package examware.student;
 
 import examware.concept.PersistedObject;
+import examware.student.controller.StudentCreationRequest;
+import examware.student.controller.StudentDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

@@ -1,5 +1,7 @@
 package examware.exam;
 
+import examware.exam.controller.ExamCreationRequest;
+import examware.exam.controller.ExamDto;
 import examware.test.EndpointTest;
 import org.junit.jupiter.api.Test;
 

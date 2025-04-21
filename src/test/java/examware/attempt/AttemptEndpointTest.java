@@ -1,9 +1,11 @@
 package examware.attempt;
 
-import examware.exam.ExamCreationRequest;
-import examware.exam.ExamDto;
-import examware.student.StudentCreationRequest;
-import examware.student.StudentDto;
+import examware.attempt.controller.AttemptCreationRequest;
+import examware.attempt.controller.AttemptDto;
+import examware.exam.controller.ExamCreationRequest;
+import examware.exam.controller.ExamDto;
+import examware.student.controller.StudentCreationRequest;
+import examware.student.controller.StudentDto;
 import examware.test.EndpointTest;
 import org.junit.jupiter.api.Test;
 
