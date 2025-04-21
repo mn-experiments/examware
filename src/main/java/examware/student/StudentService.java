@@ -1,6 +1,7 @@
 package examware.student;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -13,16 +14,18 @@ public class StudentService {
         this.repo = repo;
     }
 
+    @Transactional
     public Student create(Student newStudent) {
         return repo.save(newStudent);
     }
 
+    @Transactional
     public Student update(String name, Map<String, Object> newInfo) {
         var student = repo.findByName(name).orElseThrow(() -> new RuntimeException("not found"));
 
         student.updateWith(newInfo);
 
-        return repo.save(student);
+        return student;
     }
 
     public Student retrieve(String name) {

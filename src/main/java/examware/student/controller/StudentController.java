@@ -2,7 +2,6 @@ package examware.student.controller;
 
 import examware.student.Student;
 import examware.student.StudentService;
-import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,14 +20,12 @@ public class StudentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Transactional
     StudentDto create(@RequestBody StudentCreationRequest creationRequest) {
         return service.create(new Student(creationRequest)).asDto();
     }
 
     @PutMapping("{name}")
     @ResponseStatus(HttpStatus.OK)
-    @Transactional
     StudentDto update(@PathVariable String name, @RequestBody Map<String, Object> newInfo) {
         return service.update(name, newInfo).asDto();
     }

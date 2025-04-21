@@ -4,6 +4,7 @@ import examware.attempt.controller.AttemptCreationRequest;
 import examware.exam.ExamRepo;
 import examware.student.StudentRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class AttemptService {
         this.studentRepo = studentRepo;
     }
 
+    @Transactional
     public Attempt create(AttemptCreationRequest creationRequest) {
         var student = studentRepo.getReferenceById(creationRequest.studentId());
         var exam = examRepo.getReferenceById(creationRequest.examId());
@@ -29,6 +31,7 @@ public class AttemptService {
         return repo.save(attempt);
     }
 
+    @Transactional
     public Attempt update(Long id, Map<String, Object> newInfo) {
         var attempt = repo.findById(id).orElseThrow(() -> new RuntimeException("not found"));
         attempt.updateWith(newInfo);

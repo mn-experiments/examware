@@ -51,8 +51,12 @@ public class StudentEndpointTest extends EndpointTest {
 
         var johnDto = givenAttemptToWrite().body(john).post().as(StudentDto.class);
 
-        var updatedJohn = givenAttemptToWrite().body(newInfo).pathParam("name", johnDto.name())
+        givenAttemptToWrite().body(newInfo).pathParam("name", johnDto.name())
                 .when().put("{name}")
+                .then().statusCode(200);
+
+        var updatedJohn = givenAttemptToRead()
+                .when().get("John X")
                 .then().statusCode(200).extract().as(StudentDto.class);
 
         assertThat(updatedJohn).isEqualTo(new StudentDto(johnDto.id(), "John X", false, 3));

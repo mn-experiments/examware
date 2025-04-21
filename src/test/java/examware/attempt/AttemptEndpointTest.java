@@ -27,9 +27,9 @@ public class AttemptEndpointTest extends EndpointTest {
     @Test
     void canCreateAttempt() {
         var student = givenAttemptToWrite()
-                        .body(new StudentCreationRequest("Bob", true, 1))
-                        .basePath("student")
-                        .post().as(StudentDto.class);
+                .body(new StudentCreationRequest("Bob", true, 1))
+                .basePath("student")
+                .post().as(StudentDto.class);
 
         var exam = givenAttemptToWrite()
                 .body(new ExamCreationRequest("B"))
@@ -50,9 +50,9 @@ public class AttemptEndpointTest extends EndpointTest {
     @Test
     void canUpdateAttempt() {
         var student = givenAttemptToWrite()
-                        .body(new StudentCreationRequest("Bob", true, 1))
-                        .basePath("student")
-                        .post().as(StudentDto.class);
+                .body(new StudentCreationRequest("Bob", true, 1))
+                .basePath("student")
+                .post().as(StudentDto.class);
 
         var exam = givenAttemptToWrite()
                 .body(new ExamCreationRequest("B"))
@@ -63,8 +63,11 @@ public class AttemptEndpointTest extends EndpointTest {
                 .body(new AttemptCreationRequest(student.id(), exam.id(), ATTEMPT_DATE)).post()
                 .as(AttemptDto.class);
 
-        var updatedAttempt = givenAttemptToWrite().body(Map.<String, Object>of("score", 78))
-                .put(Long.toString(attempt.id()))
+        givenAttemptToWrite().body(Map.<String, Object>of("score", 78))
+                .put(Long.toString(attempt.id()));
+
+        var updatedAttempt = givenAttemptToRead()
+                .get(Long.toString(attempt.id()))
                 .as(AttemptDto.class);
 
         assertThat(updatedAttempt).isEqualTo(new AttemptDto(attempt.id(), ATTEMPT_DATE, 78));

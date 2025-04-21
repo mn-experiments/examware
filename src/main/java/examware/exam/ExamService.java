@@ -1,6 +1,7 @@
 package examware.exam;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class ExamService {
         this.repo = repo;
     }
 
+    @Transactional
     public Exam create(Exam newExam) {
         return repo.save(newExam);
     }
@@ -24,6 +26,7 @@ public class ExamService {
         return repo.findAll();
     }
 
+    @Transactional
     public void delete(String name) {
         repo.deleteByName(name);
     }
