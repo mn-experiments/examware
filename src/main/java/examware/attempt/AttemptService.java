@@ -2,7 +2,9 @@ package examware.attempt;
 
 import examware.attempt.controller.AttemptCreationRequest;
 import examware.exam.ExamRepo;
+import examware.exam.ExamService;
 import examware.student.StudentRepo;
+import examware.student.StudentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,21 +14,27 @@ import java.util.Map;
 @Service
 public class AttemptService {
     private final AttemptRepo repo;
-    private final ExamRepo examRepo;
-    private final StudentRepo studentRepo;
+    private final ExamService examService;
+    private final StudentService studentService;
+    private final AttemptValidator validator;
 
-    public AttemptService(AttemptRepo repo, ExamRepo examRepo, StudentRepo studentRepo) {
+    public AttemptService(AttemptRepo repo,
+                          ExamService examService,
+                          StudentService studentService,
+                          AttemptValidator validator) {
         this.repo = repo;
-        this.examRepo = examRepo;
-        this.studentRepo = studentRepo;
+        this.examService = examService;
+        this.studentService = studentService;
+        this.validator = validator;
     }
 
     @Transactional
     public Attempt create(AttemptCreationRequest creationRequest) {
-        var student = studentRepo.getReferenceById(creationRequest.studentId());
-        var exam = examRepo.getReferenceById(creationRequest.examId());
+        var student = studentService.retrieve(creationRequest.studentId());
+        var exam = examService.retrieve(creationRequest.examId());
 
         var attempt = new Attempt(student, exam, creationRequest);
+        validator.validateCreation(attempt);
 
         return repo.save(attempt);
     }

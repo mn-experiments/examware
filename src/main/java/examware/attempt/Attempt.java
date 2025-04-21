@@ -35,8 +35,12 @@ public class Attempt extends PersistedObject {
     }
 
     @Override
-    protected Long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public Student getStudent() {
+        return student;
     }
 
     public AttemptDto asDto() {

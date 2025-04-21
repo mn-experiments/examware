@@ -25,9 +25,45 @@ public class AttemptEndpointTest extends EndpointTest {
     }
 
     @Test
-    void canCreateAttempt() {
+    void creationFailsWhenNotEnoughLessons() {
         var student = givenAttemptToWrite()
                 .body(new StudentCreationRequest("Bob", true, 1))
+                .basePath("student")
+                .post().as(StudentDto.class);
+
+        var exam = givenAttemptToWrite()
+                .body(new ExamCreationRequest("B"))
+                .basePath("exam")
+                .post().as(ExamDto.class);
+
+        givenAttemptToWrite()
+                .body(new AttemptCreationRequest(student.id(), exam.id(), ATTEMPT_DATE))
+                .when().post()
+                .then().statusCode(500);
+    }
+
+    @Test
+    void creationFailsWhenFeeNotPayed() {
+        var student = givenAttemptToWrite()
+                .body(new StudentCreationRequest("Bob", false, 11))
+                .basePath("student")
+                .post().as(StudentDto.class);
+
+        var exam = givenAttemptToWrite()
+                .body(new ExamCreationRequest("B"))
+                .basePath("exam")
+                .post().as(ExamDto.class);
+
+        givenAttemptToWrite()
+                .body(new AttemptCreationRequest(student.id(), exam.id(), ATTEMPT_DATE))
+                .when().post()
+                .then().statusCode(500);
+    }
+
+    @Test
+    void canCreateAttempt() {
+        var student = givenAttemptToWrite()
+                .body(new StudentCreationRequest("Bob", true, 11))
                 .basePath("student")
                 .post().as(StudentDto.class);
 
@@ -50,7 +86,7 @@ public class AttemptEndpointTest extends EndpointTest {
     @Test
     void canUpdateAttempt() {
         var student = givenAttemptToWrite()
-                .body(new StudentCreationRequest("Bob", true, 1))
+                .body(new StudentCreationRequest("Bob", true, 12))
                 .basePath("student")
                 .post().as(StudentDto.class);
 

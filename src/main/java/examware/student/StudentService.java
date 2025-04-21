@@ -32,6 +32,10 @@ public class StudentService {
         return repo.findByName(name).orElseThrow(() -> new RuntimeException("not found"));
     }
 
+    public Student retrieve(Long id) {
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+    }
+
     public List<Student> retrieveAll() {
         return repo.findAll().stream().toList();
     }

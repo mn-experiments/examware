@@ -22,6 +22,10 @@ public class ExamService {
         return repo.findByName(name).orElseThrow(() -> new RuntimeException("not found"));
     }
 
+    public Exam retrieve(Long id) {
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("not found"));
+    }
+
     public List<Exam> retrieveAll() {
         return repo.findAll();
     }
