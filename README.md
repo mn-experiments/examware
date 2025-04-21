@@ -1,6 +1,10 @@
-# rest-validation
+# examware
 
-Thoughts on business logic validation in a REST API.
+This is a playground that accompanies my blog: 
+[https://maxnazarati.ghost.io/](https://maxnazarati.ghost.io/)
+
+It's simple and a bit rough around the edges, the idea is to polish and shape
+it along with the topics I write about on the blog.
 
 ## Project description
 
@@ -23,5 +27,4 @@ When a `student` registers for an `exam`, then an `exam attempt` is created:
 At a later point, an admin enters the `student`'s score into the system.
 
 If the `student` scored over 70% then it's a pass, otherwise, it is a
-failure. Before the scoring, the status is pending.
-
+failure. Before the scoring, the score is null.
